@@ -1,0 +1,158 @@
+local Textfield = {
+value = "New Textfield", 
+name = "", 
+x = 1, 
+y = 1, 
+lenght = 25, 
+visible = true
+}
+
+local cache = {}
+local count = 0
+Textfield.__index = Textfield
+Textfield.__metatable = "Protected"
+setmetatable(Textfield, Textfield)
+
+function new(_name, _x, _y, _lenght)
+	local w, h = term.getSize()
+	
+	if not cache[_name] then
+		if _name == nil then
+			print("You MUST specify a name")
+			error()
+		end
+		
+		if _lenght + _x + 2 >= w then
+			print("Textfield too wide, max size: "..tostring(w - (_x + 3)))
+			error()
+		end
+		
+		local t = {
+		name = _name, 
+		x = _x, 
+		y = _y, 
+		lenght = _lenght,
+		}
+		
+		cache[_name] = true
+		setmetatable(t, Textfield)
+		return t
+	else
+		print("An instance with the same name already exists")
+		error()
+	end
+end
+
+function Textfield:draw()
+	if self.visible then
+		term.setCursorPos(self.x, self.y)
+		io.write("+")
+		io.write(string.rep("-", self.lenght - 2))
+		io.write("+")
+		term.setCursorPos(self.x, self.y + 1)
+		term.clearLine()
+		term.write("|"..self.value)
+		term.setCursorPos(self.x + self.lenght - 1, self.y + 1)
+		io.write("|")
+		term.setCursorPos(self.x, self.y + 2)
+		io.write("+")
+		io.write(string.rep("-", self.lenght - 2))
+		io.write("+\n")
+	end
+end
+
+function Textfield:setText(_value)
+	if type(_value) ~= "table" and type(_value) ~= "function" and type(_value) ~= "boolean" and _value ~= nil and tostring(_value):len() <= self.lenght then
+		self.value = tostring(_value)
+		self:draw()
+	else
+		print("Invalid type, a nil value or the text is too long")
+	end
+end
+
+function Textfield:edit()
+	term.setCursorPos(self.x + 1, self.y + 1)
+	term.setCursorBlink(true)
+	local str = ""
+	local x, y = term.getCursorPos()
+	local pos = 1
+	local w, h = term.getSize()
+	io.write(string.rep(" ", self.lenght - x))
+	term.setCursorPos(x, y)
+	
+	local function redraw()
+		term.setCursorPos(x, y)
+		io.write( string.rep(" ", w - x + 1) )
+		term.setCursorPos(x + self.lenght - 2, y)
+		io.write("|")
+		term.setCursorPos(x, y)
+		io.write(str)
+		term.setCursorPos(x + pos - 1, y)
+	end
+	
+	while true do
+		local e, p1, p2, p3, p4 = os.pullEvent()
+		if e == "key" then --Key		
+			if p1 == 205 then --Right
+				if pos <= str:len() then
+					pos = pos + 1
+				end
+				redraw()
+			elseif p1 == 203 then --Left
+				if pos > 1 then
+					pos = pos - 1
+				end
+				redraw()
+			elseif p1 == 28 then --Enter
+				break
+			elseif p1 == 14 then --Backspace
+				if pos > 1 then 
+					pos = pos - 1
+					str = str:sub(1, pos - 1)..str:sub(pos + 1)
+					redraw()
+				end
+			end
+		elseif e == "char" then --Character
+			if str:len() < self.lenght - 2 then
+				str = str:sub(1, pos - 1)..p1..str:sub(pos)
+				pos = pos + 1
+				redraw()
+			end
+		end
+		redraw()
+	end
+	
+	self:setText(str)
+	self:draw()
+	term.setCursorPos(1, self.y + 3)
+	return str, str:len()
+end
+
+function Textfield:setVisible(b)
+	self.visible = b
+	self:draw()
+end
+
+function Textfield:getText()
+	return self.value
+end
+
+function Textfield:getMaxLenght()
+	return self.lenght
+end
+
+function Textfield:isVisible()
+	return self.visible
+end
+
+function Textfield:getLenght()
+	return self.value:len()
+end
+
+function Textfield:setMaxLenght(_lenght)
+	self.lenght = _lenght
+end
+
+function Textfield:destroy()
+	cache[self.name] = false
+end

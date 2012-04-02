@@ -1,0 +1,40 @@
+function exists(path)
+	local file = assert(io.open(path, "r"))
+	if file == nil then
+		file:close()
+		return true
+	else
+		return false
+	end
+end
+
+function getLine(path, n)
+	if exists(path) then
+		local file = assert(io.open(path, "r"))
+		local lines = file:lines()
+		return lines[n]
+	end
+end
+
+function getText(path)
+	if exists(path) then
+		local file = assert(io.open(path, "r"))
+		return file:read("*a")
+	end
+end
+
+function fappend(path, text)
+	local file = assert(io.open(path, "a"))
+	file:write(text.."\n")
+	file:close()
+end 
+
+function fwrite(path, text)
+	local file = assert(io.open(path, "w"))
+	file:write(text)
+	file:close()
+end 
+
+function loadAsApi(path)
+	
+end
