@@ -1,3 +1,5 @@
+--Copyright (C) Mads Clausen luacodingcc@gmail.com
+
 local Textfield = {
 value = "New Textfield", 
 name = "", 
