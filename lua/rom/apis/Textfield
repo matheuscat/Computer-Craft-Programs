@@ -156,7 +156,7 @@ function Textfield:setMaxLenght(_lenght)
 	if tonumber(_lenght) <=  w - (self.x + self.lenght + 2) then
 		self.lenght = tonumber(_lenght)
 	else
-		print("Textfield too wide, max size: "..tostring(w - (self.x + 3))
+		print("Textfield too wide, max size: "..tostring(w - (self.x + 3)))
 	end
 end
 

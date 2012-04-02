@@ -1,0 +1,128 @@
+--Copyright (C) 2012 Mads Clausen luacodingcc@gmail.com
+
+local Button = {
+	value = "Button",
+	name = "",
+	x = 1,
+	y = 1,
+	width = 1,
+	height = 1,
+	visible = true,
+}
+
+local cache = {}
+Button.__index = Button
+setmetatable(Button, Button)
+
+local function round(num, idp)
+  local mult = 10^(idp or 0)
+  return math.floor(num * mult + 0.5) / mult
+end
+
+function new(_name, _x, _y, _width, _height)
+	local w, h = term.getSize()
+
+	if not cache[_name] then
+		if _name == nil then
+			print("You MUST specify a name")
+			error()
+		end
+		
+		if _width + _x + 2 >= w then
+			print("Button too wide, max width: "..tostring(w - (_x + 2)))
+			error()
+		end
+
+		if _height + _y + 2 >= h then
+			print("Button too high, max height: "..tostring(h - (_Y + 2)))
+			error()
+		end
+		
+		local t = {
+			name = _name, 
+			value = "",
+			x = _x,
+			y = _y,
+			width = _width,
+			height = _height,
+			visible = true
+		}
+		
+		cache[_name] = true
+		setmetatable(t, Button)
+		return t
+	else
+		print("An instance with the same name already exists")
+		error()
+	end
+end
+
+function Button:draw()
+	if self.visible then
+		term.setCursorPos(self.x, self.y)
+		io.write("+")
+		io.write(string.rep("-", self.width - 2))
+		io.write("+")
+		
+		for i = 1, self.height - 2 do
+			term.setCursorPos(self.x, self.y + i)
+			io.write("|")
+			term.setCursorPos(self.x + self.width - 1, self.y + i)
+			io.write("|")
+		end
+		
+		term.setCursorPos(self.x, self.y + self.height - 1)
+		io.write("+")
+		io.write(string.rep("-", self.width - 2))
+		io.write("+")
+		
+		term.setCursorPos(round(self.x + self.width / 2 - self.value:len() / 2), round(self.y + self.height / 2) - 1)
+		io.write(self.value)
+		
+		term.setCursorPos(self.x + self.width - 1, round(self.y + self.height / 2) - 1)
+		io.write("|")
+	end
+	term.setCursorPos(1, self.y + self.height + 1)
+end
+
+function Button:setText(_value)
+	if type(_value) ~= "table" and type(_value) ~= "function" and type(_value) ~= "boolean" and _value ~= nil and tostring(_value):len() <= self.width - 2 then
+		self.value = tostring(_value)
+		self:draw()
+	else
+		print("Invalid type, a nil value or the text is too long")
+	end
+end
+
+function Button:setVisible(b)
+	self.visible = true
+end
+
+function Button:getText()
+	return self.value
+end
+
+function Button:getWidth()
+	return self.width
+end
+
+function Button:getHeight()
+	return self.height
+end
+
+function Button:setAction(_action)
+	if type(_action) == "function" then
+		self.action = _action
+	else
+		print("Unsupported type of action")
+		error()
+	end
+end
+
+function Button:onClick()
+	self.action()
+end
+
+function Button:destroy()
+	cache[self.name] = false
+end
