@@ -1,3 +1,5 @@
+--Copyright (C) 2012 Mads Clausen luacodingcc@gmail.com
+
 function exists(path)
 	local file = assert(io.open(path, "r"))
 	if file == nil then
