@@ -176,5 +176,9 @@ function getPath(path)
 end
 
 function fremove(path)
-	os.remove(path)
+	if os.remove then
+		os.remove(path)
+	else
+		fs.remove(path)
+	end
 end
