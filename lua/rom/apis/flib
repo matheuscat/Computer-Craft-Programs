@@ -93,6 +93,54 @@ function fwriteAtStartFromTable(path, t)
 	fwriteAtStart(path, text)
 end
 
+function fwriteFromLine(path, n, text)
+	if exists(path) then
+		local lines = getTable(path)
+		local file = io.open(path, "w")
+		local count = 0
+		
+		for i = 1, n do
+			file:write(lines[i].."\n")
+			count = count + 1
+		end
+		
+		file:write(text.."\n")
+		
+		for i = n + 1, #lines + count do
+			if lines[i] ~= nil then
+				file:write(lines[i].."\n")
+			end
+		end
+		
+		file:close()
+	end
+end
+
+function fwriteFromLineFromTable(path, n, _lines)
+	if exists(path) then
+		local lines = getTable(path)
+		local file = io.open(path, "w")
+		local count = 0
+		
+		for i = 1, n do
+			file:write(lines[i].."\n")
+			count = count + 1
+		end
+		
+		for _, line in pairs(_lines) do
+			file:write(tostring(line).."\n")
+		end
+		
+		for i = n + 1, #lines + count do
+			if lines[i] ~= nil then
+				file:write(lines[i].."\n")
+			end
+		end
+		
+		file:close()
+	end
+end
+
 function replaceLine(path, n, text)
 	local lines = getTable(path)
 	lines[n] = text
