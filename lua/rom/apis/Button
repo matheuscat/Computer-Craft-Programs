@@ -123,6 +123,33 @@ function Button:onClick()
 	self.action()
 end
 
+function Button:setX(_x)
+	local w, h = term.getSize()
+	if self.width + _x + 2 >= w then
+		print("Button too wide, max size: "..tostring(w - (_x + 3)))
+		error()
+	end
+	self.x = _x
+end
+
+function Button:setY(_y)
+	local w, h = term.getSize()
+	if _y <= h - 3 then
+		self.y = _y
+	else
+		print("Y position to high, max y: "..h - 3)
+		error()
+	end
+end
+
+function Button:getX()
+	return self.x
+end
+
+function Button:getY()
+	return self.y
+end
+
 function Button:destroy()
 	cache[self.name] = false
 end
