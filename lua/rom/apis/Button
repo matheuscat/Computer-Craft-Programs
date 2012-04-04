@@ -8,6 +8,9 @@ local Button = {
 	width = 1,
 	height = 1,
 	visible = true,
+	action = function() 
+		print("Clicked!") 
+	end
 }
 
 local cache = {}
@@ -15,7 +18,7 @@ Button.__index = Button
 setmetatable(Button, Button)
 
 local function round(num, idp)
-  local mult = 10^(idp or 0)
+  local mult = 10 ^ (idp or 0)
   return math.floor(num * mult + 0.5) / mult
 end
 
@@ -121,6 +124,29 @@ end
 
 function Button:onClick()
 	self.action()
+end
+
+function Button:getAction()
+	return self.action
+end
+
+function Button:setWidth(_width)
+	local w, h = term.getSize()
+	if _width + self.x + 2 >= w then
+		print("Button too wide, max width: "..tostring(w - (self.x + 2)))
+		error()
+	end
+	
+	self.width = _width
+end
+
+function Button:setHeight(_height)
+	if _height + self.y + 2 >= h then
+		print("Button too high, max height: "..tostring(h - (self.Y + 2)))
+		error()
+	end
+	
+	self.height = _height
 end
 
 function Button:setX(_x)
