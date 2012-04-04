@@ -160,6 +160,35 @@ function Textfield:setMaxLenght(_lenght)
 	end
 end
 
+function Textfield:setX(_x)
+	local w, h = term.getSize()
+	if self.lenght + _x + 2 >= w then
+		print("Textfield too wide, max size: "..tostring(w - (_x + 3)))
+		error()
+	end
+	self.x = _x
+end
+
+
+
+function Textfield:setY(_y)
+	local w, h = term.getSize()
+	if _y <= h - 3 then
+		self.y = _y
+	else
+		print("Y position to high, max y: "..h - 3)
+		error()
+	end
+end
+
+function Textfield:getX()
+	return self.x
+end
+
+function Textfield:getY()
+	return self.y
+end
+
 function Textfield:destroy()
 	cache[self.name] = false
 end
