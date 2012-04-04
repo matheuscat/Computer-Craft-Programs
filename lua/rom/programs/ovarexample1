@@ -1,0 +1,56 @@
+--Copyright (C) 2012 Mads Clausen luacodingcc@gmail.com
+
+function newUser(_name, _pass)
+        if ovar.exists("forum_example_user_".._name) then
+                return false
+        end
+        
+        local user = ovar.new("forum_example_user_".._name, _pass)
+        user:save()
+        user:unload()
+        return true
+end
+
+function login(_name, _pass)
+        if not ovar.exists("forum_example_user_".._name) then
+                return false
+        end
+        
+        local pass = ovar.load("forum_example_user_".._name)
+        if _pass == pass.value then
+                pass:unload()
+                return true
+        end
+end
+
+function start()
+        print("Options:\n1. Login\n2. New User")
+        io.write("Choice: ")
+        local choice = tonumber(io.read())
+        io.write("Username: ")
+        local user = tostring(io.read())
+        io.write("Password: ")
+        local pass = tostring(io.read())
+        
+        if choice ~= 1 and choice ~= 2 then
+                print("Unknown option")
+                return
+        elseif choice == 1 then
+                if login(user, pass) then
+                        print("Success!")
+                        return
+                else
+                        print("Username/password incorrect")
+                        return
+                end
+        elseif choice == 2 then
+                if newUser(user, pass) then
+                        print("Success!")
+                else
+                        print("User already exists")
+                end
+        end
+end
+
+newUser("admin", "admin")
+start()
